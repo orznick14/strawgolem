@@ -1,5 +1,6 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
+import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.block.*;
@@ -26,10 +27,24 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
 
     @Override
     public boolean shouldExecute() {
-        if (super.searchForDestination() && strawgolem.isHandEmpty()) {
-            this.runDelay = 0;
+        if (strawgolem.isHandEmpty() && shouldMoveTo(strawgolem.world, strawgolem.getHarvestPos())) {
+            destinationBlock = strawgolem.getHarvestPos();
+            this.runDelay = this.getRunDelay(this.creature);
             return true;
-        } else return false;
+        }
+        strawgolem.clearHarvestPos();
+        if (this.runDelay > 0) {
+            --this.runDelay;
+            return false;
+        } else {
+            this.runDelay = this.getRunDelay(this.creature);
+            return strawgolem.isHandEmpty() && this.searchForDestination();
+        }
+    }
+
+    @Override
+    public void startExecuting() {
+        super.startExecuting();
     }
 
     @Override

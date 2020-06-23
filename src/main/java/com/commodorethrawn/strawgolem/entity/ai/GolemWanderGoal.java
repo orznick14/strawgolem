@@ -14,6 +14,6 @@ public class GolemWanderGoal extends WaterAvoidingRandomWalkingGoal {
 
     @Override
     public boolean shouldExecute() {
-        return strawGolem.getHeldItemMainhand().isEmpty() && super.shouldExecute();
+        return strawGolem.isHandEmpty() && super.shouldExecute();
     }
 }
