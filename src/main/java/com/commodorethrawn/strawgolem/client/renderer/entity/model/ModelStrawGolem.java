@@ -1,4 +1,4 @@
-package com.commodorethrawn.strawgolem.entity;
+package com.commodorethrawn.strawgolem.client.renderer.entity.model;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.entity.model.EntityModel;
@@ -9,10 +9,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.math.MathHelper;
 
+
 // Made using Blockbench 3.5.3 by the talented Fr3nderman
 // Exported for Minecraft version 1.15
-public class ModelStrawGolem<T extends Entity> extends EntityModel<T> implements IHasArm {
-    private final RendererModel Head;
+public class ModelStrawGolem<T extends Entity> extends EntityModel<T> implements IHasArm {    private final RendererModel Head;
     private final RendererModel Body;
     private final RendererModel RightLeg;
     private final RendererModel LeftLeg;
@@ -128,5 +128,16 @@ public class ModelStrawGolem<T extends Entity> extends EntityModel<T> implements
             GlStateManager.translatef(0.05F, 1.3F, 0.23F);
             GlStateManager.rotatef(90.0F, -1.0F, 0.0F, 0.0F);
         }
+    }
+
+    /**
+     * Updates the holdingItem and holdingBlock properties of this model
+     *
+     * @param holdingItem  : the new value of this.holdingItem
+     * @param holdingBlock : the new value of this.holdingBlock
+     */
+    public void setStatus(boolean holdingItem, boolean holdingBlock) {
+        this.holdingItem = holdingItem;
+        this.holdingBlock = holdingBlock;
     }
 }

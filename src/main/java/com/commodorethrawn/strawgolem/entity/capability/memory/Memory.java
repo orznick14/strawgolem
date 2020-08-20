@@ -1,61 +1,58 @@
 package com.commodorethrawn.strawgolem.entity.capability.memory;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Memory implements IMemory {
 
-    private final List<BlockPos> posList;
+    private final Set<Pair<IWorld, BlockPos>> posList;
     private BlockPos priority;
 
     public Memory() {
-        posList = new ArrayList<>();
+        posList = new HashSet<>();
         priority = BlockPos.ZERO;
     }
 
     @Override
-    public List<BlockPos> getPositionList() {
+    public Set<Pair<IWorld, BlockPos>> getPositions() {
         return posList;
     }
 
     @Override
-    public BlockPos getClosestPosition(BlockPos pos) {
-        if (posList.size() == 0) return BlockPos.ZERO;
-        BlockPos closest = posList.get(0);
-        for (int i = 1; i < posList.size(); ++i) {
-            if (pos.distanceSq(closest) > pos.distanceSq(posList.get(i))) {
-                closest = posList.get(i);
+    public BlockPos getDeliveryChest(IWorld world, BlockPos pos) {
+        if (!priority.equals(BlockPos.ZERO)) {
+            return priority;
+        }
+        BlockPos closest = BlockPos.ZERO;
+        for (Pair<IWorld, BlockPos> chestPos : posList) {
+            if (!chestPos.getFirst().equals(world)) continue;
+            if (pos.distanceSq(closest) >= pos.distanceSq(chestPos.getSecond())) {
+                closest = chestPos.getSecond();
             }
         }
         return closest;
     }
 
     @Override
-    public boolean containsPosition(BlockPos pos) {
-        return posList.contains(pos);
+    public void addPosition(IWorld world, BlockPos pos) {
+        posList.add(Pair.of(world, pos));
     }
 
     @Override
-    public void addPosition(BlockPos pos) {
-        posList.add(pos);
-    }
-
-    @Override
-    public void removePosition(BlockPos pos) {
-        posList.remove(pos);
-    }
-
-    @Override
-    public boolean hasPriorityChest() {
-        return priority != BlockPos.ZERO;
+    public void removePosition(IWorld world, BlockPos pos) {
+        if (priority.equals(pos)) priority = BlockPos.ZERO;
+        posList.remove(Pair.of(world, pos));
     }
 
     @Override
     public BlockPos getPriorityChest() {
         return priority;
     }
+
 
     @Override
     public void setPriorityChest(BlockPos pos) {

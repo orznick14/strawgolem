@@ -1,24 +1,48 @@
 package com.commodorethrawn.strawgolem.entity.capability.memory;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
 
-import java.util.List;
+import java.util.Set;
 
 public interface IMemory {
 
-    List<BlockPos> getPositionList();
+    /**
+     * Returns the set of all remembered chest positions
+     * @return the positions
+     */
+    Set<Pair<IWorld, BlockPos>> getPositions();
 
-    BlockPos getClosestPosition(BlockPos pos);
+    /**
+     * Retrieves and returns the closest chest to the BlockPos pos
+     * @param pos
+     * @return the closest position
+     */
+    BlockPos getDeliveryChest(IWorld world, BlockPos pos);
 
-    boolean containsPosition(BlockPos pos);
+    /**
+     * Adds pos to the remembered positions
+     * @param pos
+     */
+    void addPosition(IWorld world, BlockPos pos);
 
-    void addPosition(BlockPos pos);
+    /**
+     * Removes pos from the remembered positions
+     *
+     * @param pos
+     */
+    void removePosition(IWorld world, BlockPos pos);
 
-    void removePosition(BlockPos pos);
-
-    boolean hasPriorityChest();
-
+    /**
+     * @return the priority chest
+     */
     BlockPos getPriorityChest();
 
+
+    /**
+     * Sets the priority chest to pos
+     * @param pos
+     */
     void setPriorityChest(BlockPos pos);
 }

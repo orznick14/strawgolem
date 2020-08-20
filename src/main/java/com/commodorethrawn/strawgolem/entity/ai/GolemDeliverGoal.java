@@ -1,27 +1,28 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
-import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
+import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+
+import javax.annotation.Nonnull;
 
 public class GolemDeliverGoal extends MoveToBlockGoal {
     private final EntityStrawGolem strawGolem;
     private Boolean deliveringBlock;
 
     public GolemDeliverGoal(EntityStrawGolem strawGolem, double speedIn) {
-        super(strawGolem, speedIn, StrawgolemConfig.getSearchRangeHorizontal(), StrawgolemConfig.getSearchRangeVertical());
+        super(strawGolem, speedIn, ConfigHelper.getSearchRangeHorizontal(), ConfigHelper.getSearchRangeVertical());
         this.strawGolem = strawGolem;
     }
 
@@ -32,43 +33,34 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
     }
 
     @Override
-    public void startExecuting() {
-        super.startExecuting();
-    }
-
-    @Override
     public boolean shouldContinueExecuting() {
         return !strawGolem.isHandEmpty() && super.shouldContinueExecuting();
     }
 
     @Override
     protected boolean searchForDestination() {
-        BlockPos pos = strawGolem.getChestPos();
+        BlockPos pos = strawGolem.getMemory().getDeliveryChest(strawGolem.getEntityWorld(), strawGolem.getPosition());
         if (shouldMoveTo(strawGolem.world, pos)) {
             this.destinationBlock = pos;
             return true;
         }
-        strawGolem.removeChestPos(pos);
-        return super.searchForDestination();
+        if (strawGolem.getMemory().getPriorityChest().equals(pos))
+            strawGolem.getMemory().setPriorityChest(BlockPos.ZERO);
+        strawGolem.getMemory().removePosition(strawGolem.world, pos);
+        return (super.searchForDestination() && strawGolem.canSeeBlock(strawGolem.world, destinationBlock));
     }
 
     @Override
-    protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
-        Vec3d posVec = strawGolem.getPositionVec().add(0, 1, 0);
-        if (posVec.getY() % 1 > 0.01)
-            posVec = posVec.add(0, 1, 0); // Used to patch the ray trace colliding with non-full-height blocks
-        RayTraceContext ctx = new RayTraceContext(posVec, new Vec3d(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, strawGolem);
-        if (worldIn.getTileEntity(pos) instanceof ChestTileEntity && worldIn.rayTraceBlocks(ctx).getPos().equals(pos)) {
-            strawGolem.addChestPos(pos);
-            return true;
-        }
-        return false;
+    protected boolean shouldMoveTo(IWorldReader worldIn, @Nonnull BlockPos pos) {
+        return (worldIn.getBlockState(pos).getBlock() != Blocks.AIR
+                && worldIn.getTileEntity(pos) != null
+                && worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent());
     }
 
     @Override
     public void tick() {
         if (deliveringBlock == null) {
-            deliveringBlock = strawGolem.holdingBlockCrop();
+            deliveringBlock = strawGolem.holdingFullBlock();
         }
         this.strawGolem.getLookController().setLookPosition(
                 this.destinationBlock.getX() + 0.5D,
@@ -76,7 +68,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
                 this.destinationBlock.getZ() + 0.5D,
                 10.0F,
                 this.strawGolem.getVerticalFaceSpeed());
-        if (!this.destinationBlock.withinDistance(this.creature.getPositionVec(), this.getTargetDistanceSq() + 0.2D)) {
+        if (!this.destinationBlock.withinDistance(this.creature.getPositionVec(), this.getTargetDistanceSq())) {
             ++this.timeoutCounter;
             if (this.shouldMove()) {
                 this.creature.getNavigator().tryMoveToXYZ(this.destinationBlock.getX() + 0.5D, this.destinationBlock.getY() + 1D, this.destinationBlock.getZ() + 0.5D, movementSpeed);
@@ -87,24 +79,37 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
         }
     }
 
+    /**
+     * Handles the logic for deposits
+     * Finds first empty/compatible slot in the chest and puts the golem's held item there
+     */
     private void doDeposit() {
+        strawGolem.getMemory().addPosition(strawGolem.world, destinationBlock);
         ServerWorld worldIn = (ServerWorld) this.strawGolem.world;
         BlockPos pos = this.destinationBlock;
-        ChestTileEntity chest = (ChestTileEntity) worldIn.getTileEntity(pos);
-        IItemHandler chestInv = chest.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElseThrow(() -> new NullPointerException("Chest IItemhandler cannot be null"));
-        ItemStack insertStack = this.strawGolem.inventory.extractItem(0, 64, false);
+        IItemHandler chestInv = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
+                .orElseThrow(() -> new NullPointerException("Chest IItemhandler cannot be null"));
+        ItemStack insertStack = this.strawGolem.getInventory().extractItem(0, 64, false);
+        boolean chestFull = true;
         for (int i = 0; i < chestInv.getSlots(); ++i) {
             if (chestInv.getStackInSlot(i).getItem() == Items.AIR
                     || (chestInv.getStackInSlot(i).getItem() == insertStack.getItem() && chestInv.getStackInSlot(i).getCount() < chestInv.getSlotLimit(0))) {
                 chestInv.insertItem(i, insertStack, false);
+                chestFull = false;
                 break;
             }
         }
+        if (chestFull) {
+            ItemEntity item = new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ());
+            item.setItem(insertStack);
+            worldIn.addEntity(item);
+        }
         worldIn.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        strawGolem.getNavigator().clearPath();
     }
 
     @Override
     public double getTargetDistanceSq() {
-        return super.getTargetDistanceSq() + 0.15D;
+        return super.getTargetDistanceSq() + 0.3D;
     }
 }
