@@ -1,5 +1,5 @@
 modLoader="javafml" #mandatory
-loaderVersion="[31,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
+loaderVersion="[28,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
 issueTrackerURL="https://github.com/daPoseidonGuy/strawgolem"
 [[mods]] #mandatory
     modId="strawgolem"

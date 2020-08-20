@@ -31,8 +31,8 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
         // Shivering movement
         Biome b = entityIn.world.getBiome(entityIn.getPosition());
         if (ConfigHelper.isShiverEnabled() &&
-                (b.getTempCategory() == Biome.TempCategory.COLD ||
-                        (b.getTempCategory() == Biome.TempCategory.MEDIUM && entityIn.posY > 100))) {
+                (b.getTemperature(entityIn.getPosition()) < 0.15
+                        || (entityIn.isInRain()))) {
             float offX = entityIn.getRNG().nextFloat() / 32 - 1 / 64F;
             float offZ = entityIn.getRNG().nextFloat() / 32 - 1 / 64F;
             GlStateManager.translatef(offX, 0, offZ);
