@@ -285,15 +285,14 @@ public class EntityStrawGolem extends GolemEntity {
         BlockState state = worldIn.getBlockState(pos);
         if (ConfigHelper.blockHarvestAllowed(state.getBlock())) {
             if (state.getBlock() instanceof CropsBlock)
-                return ((CropsBlock) state.getBlock()).isMaxAge(state) && canSeeBlock(worldIn, pos);
+                return ((CropsBlock) state.getBlock()).isMaxAge(state);
             else if (state.getBlock() instanceof StemGrownBlock)
-                return canSeeBlock(worldIn, pos);
+                return true;
             else if (state.getBlock() instanceof NetherWartBlock)
-                return state.get(NetherWartBlock.AGE) == 3 && canSeeBlock(worldIn, pos);
+                return state.get(NetherWartBlock.AGE) == 3;
             else if (state.getBlock() instanceof BushBlock && state.getBlock() instanceof IGrowable)
                 return state.has(BlockStateProperties.AGE_0_3)
-                        && state.get(BlockStateProperties.AGE_0_3) == 3
-                        && canSeeBlock(worldIn, pos);
+                        && state.get(BlockStateProperties.AGE_0_3) == 3;
         }
         return false;
     }
@@ -306,10 +305,11 @@ public class EntityStrawGolem extends GolemEntity {
      * @return whether the golem has line of sight
      */
     public boolean canSeeBlock(IWorldReader worldIn, BlockPos pos) {
-        Vec3d golemPos = new Vec3d(getPosition().up());
-        if (getPositionVec().y % 1F != 0) golemPos.add(0, 0.5, 0);
-        RayTraceContext ctx = new RayTraceContext(new Vec3d(pos), golemPos, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this);
-        return worldIn.rayTraceBlocks(ctx).getPos().withinDistance(getPositionVec(), 2.0D);
+        Vec3d golemPos = getPositionVec().add(0, 0.75, 0);
+        if (getPositionVec().y % 1F != 0) golemPos = golemPos.add(0, 0.5, 0);
+        Vec3d blockPos = new Vec3d(pos.getX(), pos.getY() + 0.5, pos.getZ());
+        RayTraceContext ctx = new RayTraceContext(golemPos, blockPos, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this);
+        return worldIn.rayTraceBlocks(ctx).getPos().withinDistance(blockPos, 2.5D);
     }
 
     /* Handles capabilities */
