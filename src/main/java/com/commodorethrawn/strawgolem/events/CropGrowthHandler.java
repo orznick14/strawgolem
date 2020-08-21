@@ -6,9 +6,11 @@ import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.storage.StrawgolemSaveData;
 import net.minecraft.block.*;
 import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
@@ -57,32 +59,37 @@ public class CropGrowthHandler {
 
     @SubscribeEvent
     public static void onCropGrowth(BlockEvent.CropGrowEvent.Post event) {
-        if (!event.getWorld().isRemote() && isFullyGrown(event.getWorld(), event.getPos())) {
-            EntityStrawGolem golem = getCropGolem(event.getWorld(), event.getPos());
-            if (golem != null) {
-                golem.setHarvesting(event.getPos());
-            } else {
-                scheduleCrop(event.getWorld(), event.getPos(), 12);
-            }
-        }
+        onCropGrowth((World) event.getWorld(), event.getPos());
     }
 
     @SubscribeEvent
     public static void onCropGrowth(BonemealEvent event) {
-        if (!event.getWorld().isRemote() && isNearlyGrown(event.getWorld(), event.getPos())) {
-            EntityStrawGolem golem = getCropGolem(event.getWorld(), event.getPos());
-            if (golem != null) {
-                golem.setHarvesting(event.getPos());
-            } else {
-                scheduleCrop(event.getWorld(), event.getPos(), 12);
+        onCropGrowth(event.getWorld(), event.getPos());
+    }
+
+    private static void onCropGrowth(World world, BlockPos pos) {
+        if (!world.isRemote) {
+            BlockPos cropPos = pos;
+            if (world.getBlockState(cropPos).getBlock() instanceof AttachedStemBlock) {
+                Direction facing = world.getBlockState(cropPos).get(AttachedStemBlock.FACING);
+                cropPos = cropPos.add(facing.getDirectionVec());
+            }
+            if (isFullyGrown(world, cropPos)) {
+                EntityStrawGolem golem = getCropGolem(world, cropPos);
+                if (golem != null) {
+                    golem.setHarvesting(cropPos);
+                } else {
+                    scheduleCrop(world, cropPos, 12);
+                }
             }
         }
     }
 
     /**
      * Returns the first golem nearby that has path to the crop, or null if there are none
+     *
      * @param world the world
-     * @param pos the position
+     * @param pos   the position
      * @return applicable golem or null if none apply
      */
     private static EntityStrawGolem getCropGolem(IWorld world, BlockPos pos) {
@@ -122,33 +129,6 @@ public class CropGrowthHandler {
                     && state.getBlock() instanceof IGrowable
                     && state.has(BlockStateProperties.AGE_0_3)) {
                 return state.get(BlockStateProperties.AGE_0_3) == 3;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if the crop is applicable and almost fully grown, false otherwise
-     * Used for bone meal event
-     *
-     * @param world the world
-     * @param pos the position
-     * @return whether the crop is nearly fully grown
-     */
-    private static boolean isNearlyGrown(IWorld world, BlockPos pos) {
-        BlockState state = world.getBlockState(pos);
-        if (ConfigHelper.blockHarvestAllowed(state.getBlock())) {
-            if (state.getBlock() instanceof CropsBlock) {
-                CropsBlock crop = (CropsBlock) state.getBlock();
-                return state.get(crop.getAgeProperty()) >= crop.getMaxAge() - 2;
-            } else if (state.getBlock() instanceof StemGrownBlock) {
-                return true;
-            } else if (state.getBlock() instanceof NetherWartBlock) {
-                return state.get(NetherWartBlock.AGE) == 2;
-            } else if (state.getBlock() instanceof BushBlock
-                    && state.getBlock() instanceof IGrowable
-                    && state.has(BlockStateProperties.AGE_0_3)) {
-                return state.get(BlockStateProperties.AGE_0_3) == 2;
             }
         }
         return false;
