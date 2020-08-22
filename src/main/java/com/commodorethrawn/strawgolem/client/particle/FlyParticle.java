@@ -36,7 +36,7 @@ public class FlyParticle extends SpriteTexturedParticle {
             thetaHoriz += 0.05;
             thetaVert += 0.05;
             this.motionX = Math.sin(thetaHoriz) / 14;
-            this.motionZ =  Math.cos(thetaHoriz) / 14;
+            this.motionZ = Math.cos(thetaHoriz) / 14;
             this.motionY = (Math.sin(2 * thetaVert)) / 12 + 0.025;
         }
     }

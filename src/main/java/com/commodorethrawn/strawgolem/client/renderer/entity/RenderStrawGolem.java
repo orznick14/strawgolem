@@ -45,7 +45,7 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
     @Nonnull
     @Override
     public ResourceLocation getEntityTexture(EntityStrawGolem golem) {
-        if (golem.getCurrentLifespan()  * 4 < ConfigHelper.getLifespan()) {
+        if (golem.getCurrentLifespan() * 4 < ConfigHelper.getLifespan()) {
             return TEXTURE_DYING;
         } else if (golem.getCurrentLifespan() * 2 < ConfigHelper.getLifespan()) {
             return TEXTURE_OLD;

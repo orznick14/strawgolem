@@ -18,10 +18,11 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = Strawgolem.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Registry {
 
+    public static final BasicParticleType FLY_PARTICLE = new BasicParticleType(true);
+    public static EntityType<EntityStrawGolem> STRAW_GOLEM_TYPE;
+
     private Registry() {
     }
-
-    public static EntityType<EntityStrawGolem> STRAW_GOLEM_TYPE;
 
     /**
      * Registers the entities of the mod
@@ -50,8 +51,6 @@ public class Registry {
                 EntityStrawGolem.GOLEM_INTERESTED.setRegistryName(Strawgolem.MODID, "golem_interested")
         );
     }
-
-    public static final BasicParticleType FLY_PARTICLE = new BasicParticleType(true);
 
     @SubscribeEvent
     public static void registerParticle(final RegistryEvent.Register<ParticleType<?>> event) {

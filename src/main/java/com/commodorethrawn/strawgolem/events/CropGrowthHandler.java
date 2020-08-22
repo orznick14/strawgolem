@@ -15,6 +15,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
@@ -36,19 +37,22 @@ public class CropGrowthHandler {
     protected static final PriorityQueue<CropQueueEntry> queue = new PriorityQueue<>();
     private static final int HARVEST_DELAY = 100;
     static StrawgolemSaveData data;
+    private static boolean isLoaded = false;
+    private static int ticks = 0;
 
-    private CropGrowthHandler() {}
+    private CropGrowthHandler() {
+    }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void serverStart(FMLServerStartingEvent event) {
         Strawgolem.logger.info("Strawgolem: Server Starting");
         data = StrawgolemSaveData.get(event.getServer().getWorld(DimensionType.OVERWORLD));
+        isLoaded = true;
     }
 
-    private static int ticks = 0;
     @SubscribeEvent
-    public static void tick(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && EffectiveSide.get().isServer()) {
+    public static void tick(TickEvent.WorldTickEvent event) {
+        if (event.phase == TickEvent.Phase.END && EffectiveSide.get().isServer() && isLoaded) {
             while (!queue.isEmpty() && ticks == queue.peek().tick) {
                 queue.remove().execute();
                 data.markDirty();
@@ -112,7 +116,7 @@ public class CropGrowthHandler {
      * Returns true if the crop is applicable and fully grown, false otherwise
      *
      * @param world the world
-     * @param pos the position
+     * @param pos   the position
      * @return whether the block is fully grown
      */
     private static boolean isFullyGrown(IWorld world, BlockPos pos) {
@@ -158,19 +162,19 @@ public class CropGrowthHandler {
         private final int tick;
         private int count;
 
+        public CropQueueEntry(BlockPos pos, IWorld world, int tick, int count) {
+            this.pos = pos;
+            this.world = world;
+            this.tick = tick;
+            this.count = count;
+        }
+
         public BlockPos getPos() {
             return pos;
         }
 
         public IWorld getWorld() {
             return world;
-        }
-
-        public CropQueueEntry(BlockPos pos, IWorld world, int tick, int count) {
-            this.pos = pos;
-            this.world = world;
-            this.tick = tick;
-            this.count = count;
         }
 
         public void execute() {

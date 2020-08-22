@@ -20,6 +20,9 @@ import java.util.Iterator;
 
 public class StrawgolemSaveData extends WorldSavedData {
 
+    private static final String WORLD = "world";
+    private static final String POS = "pos";
+
     public StrawgolemSaveData() {
         super(Strawgolem.MODID);
     }
@@ -33,9 +36,6 @@ public class StrawgolemSaveData extends WorldSavedData {
         DimensionSavedDataManager storage = world.getSavedData();
         return storage.getOrCreate(StrawgolemSaveData::new, Strawgolem.MODID);
     }
-
-    private static final String WORLD = "world";
-    private static final String POS = "pos";
 
     @Override
     public void read(CompoundNBT nbt) {

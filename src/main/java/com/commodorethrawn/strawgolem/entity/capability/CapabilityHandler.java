@@ -14,13 +14,13 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 @EventBusSubscriber(modid = Strawgolem.MODID)
 public class CapabilityHandler {
 
-    private CapabilityHandler() {
-    }
-
     public static final ResourceLocation LIFESPAN_RES = new ResourceLocation(Strawgolem.MODID, "lifespan");
     public static final ResourceLocation CROPSLOT_RES = new ResourceLocation(Strawgolem.MODID, "cropslot");
     public static final ResourceLocation MEMORY_RES = new ResourceLocation(Strawgolem.MODID, "memory");
     public static final ResourceLocation PROFESSION_RES = new ResourceLocation(Strawgolem.MODID, "profession");
+
+    private CapabilityHandler() {
+    }
 
     /**
      * Attaches the mods capabilities

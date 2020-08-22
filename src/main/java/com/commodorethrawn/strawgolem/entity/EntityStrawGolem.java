@@ -49,12 +49,13 @@ public class EntityStrawGolem extends GolemEntity {
     public static final SoundEvent GOLEM_SCARED = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_scared"));
     public static final SoundEvent GOLEM_INTERESTED = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_interested"));
     private static final ResourceLocation LOOT = new ResourceLocation(Strawgolem.MODID, "strawgolem");
+    private static final String BAD_CAP = "Can't be empty";
     private final ILifespan lifespan;
     private final IMemory memory;
     private final IProfession profession;
-    private static final String BAD_CAP = "Can't be empty";
-    private BlockPos harvestPos;
     private final IItemHandler inventory;
+    private BlockPos harvestPos;
+
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
         super(type, worldIn);
         inventory = getCapability(InventoryProvider.CROP_SLOT, null).orElseThrow(() -> new IllegalArgumentException(BAD_CAP));
@@ -227,6 +228,7 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Returns whether the golem is in an imperfect state (i.e. lifespan is below 90% or it has taken damage)
+     *
      * @return whether golem is hurt
      */
     private boolean isGolemHurt() {
@@ -235,6 +237,7 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Spawns the heal particles based on location x, y, z
+     *
      * @param x coordiante
      * @param y coordinate
      * @param z coordinate

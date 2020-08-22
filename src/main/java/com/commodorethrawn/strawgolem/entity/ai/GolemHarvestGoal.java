@@ -113,10 +113,11 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
 
     /**
      * Handles the logic for picking up the harvests
+     *
      * @param worldIn : the world
-     * @param pos : the position of the crop
-     * @param state : the BlockState of the crop
-     * @param block : the Block of the crop
+     * @param pos     : the position of the crop
+     * @param state   : the BlockState of the crop
+     * @param block   : the Block of the crop
      */
     private void doPickup(ServerWorld worldIn, BlockPos pos, BlockState state, Block block) {
         if (ConfigHelper.isDeliveryEnabled()) {
@@ -140,10 +141,11 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
 
     /**
      * Handles the replanting logic
+     *
      * @param worldIn : the world
-     * @param pos : the position of the crop
-     * @param state : the BlockState of the crop
-     * @param block : the Block of the crop
+     * @param pos     : the position of the crop
+     * @param state   : the BlockState of the crop
+     * @param block   : the Block of the crop
      */
     private void doReplant(ServerWorld worldIn, BlockPos pos, BlockState state, Block block) {
         if (ConfigHelper.isReplantEnabled()) {
@@ -186,7 +188,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
             List<ItemEntity> itemList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(2.5F));
             for (ItemEntity item : itemList) {
                 strawgolem.getInventory().insertItem(0, item.getItem(), false);
-                item.remove();
+                item.remove(false);
             }
         } catch (NullPointerException ex) {
             Strawgolem.logger.info(String.format("Golem could not harvest block at: %s", pos));

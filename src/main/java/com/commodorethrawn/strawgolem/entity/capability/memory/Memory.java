@@ -28,10 +28,12 @@ public class Memory implements IMemory {
             return priority;
         }
         BlockPos closest = BlockPos.ZERO;
-        for (Pair<IWorld, BlockPos> chestPos : posList) {
-            if (!chestPos.getFirst().equals(world)) continue;
-            if (pos.distanceSq(closest) >= pos.distanceSq(chestPos.getSecond())) {
-                closest = chestPos.getSecond();
+        for (Pair<IWorld, BlockPos> chest : posList) {
+            IWorld chestWorld = chest.getFirst();
+            if (!chestWorld.equals(world)) continue;
+            BlockPos chestPos = chest.getSecond();
+            if (pos.distanceSq(closest) >= pos.distanceSq(chestPos)) {
+                closest = chestPos;
             }
         }
         return closest;
