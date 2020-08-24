@@ -38,8 +38,8 @@ public class MemoryStorage implements Capability.IStorage<IMemory> {
     public void readNBT(Capability<IMemory> capability, IMemory instance, Direction side, INBT nbt) {
         CompoundNBT tag = (CompoundNBT) nbt;
         ListNBT tagList = tag.getList("positions", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < tagList.size(); ++i) {
-            CompoundNBT posNBT = (CompoundNBT) tagList.get(i);
+        for (INBT inbt : tagList) {
+            CompoundNBT posNBT = (CompoundNBT) inbt;
             DimensionType dimType = DimensionType.getById(posNBT.getInt("id"));
             if (dimType == null) continue;
             BlockPos pos = NBTUtil.readBlockPos(posNBT.getCompound("pos"));

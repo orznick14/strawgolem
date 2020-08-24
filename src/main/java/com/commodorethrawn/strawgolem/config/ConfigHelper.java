@@ -38,9 +38,14 @@ public class ConfigHelper {
     }
 
     public static boolean isLifespanPenalty(String penalty) {
-        if (penalty.equals("rain")) return StrawgolemConfig.rainPenalty;
-        else if (penalty.equals("water")) return StrawgolemConfig.waterPenalty;
-        else if (penalty.equals("heavy")) return StrawgolemConfig.heavyPenalty;
+        switch (penalty) {
+            case "rain":
+                return StrawgolemConfig.rainPenalty;
+            case "water":
+                return StrawgolemConfig.waterPenalty;
+            case "heavy":
+                return StrawgolemConfig.heavyPenalty;
+        }
         return false;
     }
 
