@@ -137,7 +137,6 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Determines if the golem is in the rain
-     *
      * @return true if the golem is in rain, false otherwise
      */
     public boolean isInRain() {
@@ -150,7 +149,6 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Returns true if the golem is not holding anything, and false otherwise
-     *
      * @return whether the hand is empty
      */
     public boolean isHandEmpty() {
@@ -168,7 +166,6 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Returns true if the golem is holding a block crop, and false otherwise
-     *
      * @return whether the golem is holding a gourd block
      */
     public boolean holdingFullBlock() {
@@ -228,7 +225,6 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Returns whether the golem is in an imperfect state (i.e. lifespan is below 90% or it has taken damage)
-     *
      * @return whether golem is hurt
      */
     private boolean isGolemHurt() {
@@ -237,7 +233,6 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Spawns the heal particles based on location x, y, z
-     *
      * @param x coordiante
      * @param y coordinate
      * @param z coordinate
@@ -265,9 +260,9 @@ public class EntityStrawGolem extends GolemEntity {
 
     @Override
     public void stopRiding() {
-        LivingEntity ridingEntity = (LivingEntity) getRidingEntity();
         super.stopRiding();
-        if (ridingEntity instanceof IronGolemEntity) {
+        if (getRidingEntity() instanceof IronGolemEntity) {
+            LivingEntity ridingEntity = (LivingEntity) getRidingEntity();
             double lookX = ridingEntity.getLookVec().x;
             double lookZ = ridingEntity.getLookVec().z;
             double magnitude = Math.sqrt(lookX * lookX + lookZ * lookZ);
@@ -279,7 +274,6 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Determines whether or not the block at position pos in world worldIn should be harvested
-     *
      * @param worldIn the world
      * @param pos     the position
      * @return whether the golem should harvest the block
@@ -302,7 +296,6 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Checks if golem has line of sight on the block
-     *
      * @param worldIn the world
      * @param pos     the position
      * @return whether the golem has line of sight
@@ -317,12 +310,17 @@ public class EntityStrawGolem extends GolemEntity {
 
     /* Handles capabilities */
 
+    /**
+     * Returns the inventory capability, used to store items
+     *
+     * @return the golem's IItemHandler capability
+     */
     public IItemHandler getInventory() {
         return inventory;
     }
 
     /**
-     * Returnns the memory, capability, used to store and retrieve chest positions
+     * Returns the memory, capability, used to store and retrieve chest positions
      *
      * @return the golem's memory capability
      */
@@ -332,7 +330,6 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Sets the harvest position to pos
-     *
      * @param pos new harvest position
      */
     public void setHarvesting(BlockPos pos) {
@@ -341,7 +338,6 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Returns the position to be used to initiate the GolemHarvestGoal
-     *
      * @return the harvest position
      */
     public BlockPos getHarvestPos() {
@@ -361,7 +357,6 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Adds time to the lifespan
-     *
      * @param time additional lifespan
      */
     public void addToLifespan(int time) {

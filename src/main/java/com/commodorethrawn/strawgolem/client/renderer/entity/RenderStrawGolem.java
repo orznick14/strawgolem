@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -36,10 +37,11 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
         TEXTURE_WINTER = "winter_golem";
         TEXTURE_MAP = new HashMap<>();
         InputStream stream = Strawgolem.class.getResourceAsStream("/assets/strawgolem/textures/entity");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
             while (reader.ready()) {
-                String name = reader.readLine().replace(".png", "");
+                String name = reader.readLine();
+                if (name != null) name = name.replace(".png", "");
                 TEXTURE_MAP.put(name, new ResourceLocation(Strawgolem.MODID, "textures/entity/" + name + ".png"));
             }
             stream.close();
@@ -49,7 +51,6 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
         }
         IS_DECEMBER = GregorianCalendar.getInstance().get(Calendar.MONTH) == Calendar.DECEMBER;
     }
-
 
     public RenderStrawGolem(EntityRendererManager rendermanagerIn) {
         super(rendermanagerIn, new ModelStrawGolem(), 0.5f);
@@ -89,7 +90,7 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
     @ParametersAreNonnullByDefault
     protected void renderName(EntityStrawGolem entityIn, String displayNameIn, MatrixStack matrixStackIn,
                               IRenderTypeBuffer bufferIn, int packedLightIn) {
-        if (!TEXTURE_MAP.containsKey(entityIn.getDisplayName().getString()))
+        if (!TEXTURE_MAP.containsKey(entityIn.getDisplayName().getString().toLowerCase()))
             super.renderName(entityIn, displayNameIn, matrixStackIn, bufferIn, packedLightIn);
     }
 }
