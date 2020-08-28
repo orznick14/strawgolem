@@ -37,13 +37,14 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
         TEXTURE_WINTER = new ResourceLocation(Strawgolem.MODID, "textures/entity/winter_golem.png");
         TEXTURE_MAP = new HashMap<>();
         InputStream nameStream = Strawgolem.class.getResourceAsStream("/assets/strawgolem/textures/entity/customnames");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(nameStream, StandardCharsets.UTF_8));
         try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(nameStream, StandardCharsets.UTF_8));
             while (reader.ready()) {
                 String name = reader.readLine();
                 ResourceLocation loc = new ResourceLocation(Strawgolem.MODID, "textures/entity/" + name + ".png");
                 TEXTURE_MAP.put(name, loc);
             }
+            reader.close();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
