@@ -21,7 +21,7 @@ public class PickupGolemGoal extends Goal {
     public PickupGolemGoal(IronGolemEntity creature, double speedIn) {
         ironGolem = creature;
         this.speed = speedIn;
-        this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        this.setMutexFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
     @Override

@@ -15,8 +15,6 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
-import javax.annotation.Nonnull;
-
 public class GolemDeliverGoal extends MoveToBlockGoal {
     private final EntityStrawGolem strawGolem;
     private Boolean deliveringBlock;
@@ -51,7 +49,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
     }
 
     @Override
-    protected boolean shouldMoveTo(IWorldReader worldIn, @Nonnull BlockPos pos) {
+    protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
         return (worldIn.getBlockState(pos).getBlock() != Blocks.AIR
                 && worldIn.getTileEntity(pos) != null
                 && worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent());
@@ -110,6 +108,6 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
 
     @Override
     public double getTargetDistanceSq() {
-        return super.getTargetDistanceSq() + 0.3D;
+        return super.getTargetDistanceSq() + 0.5D;
     }
 }

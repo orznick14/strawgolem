@@ -19,4 +19,5 @@ public class GolemWanderGoal extends WaterAvoidingRandomWalkingGoal {
                 && strawGolem.getHarvestPos().equals(BlockPos.ZERO)
                 && super.shouldExecute();
     }
+
 }
