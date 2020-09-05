@@ -21,7 +21,7 @@ public class PickupGolemGoal extends Goal {
     public PickupGolemGoal(IronGolemEntity creature, double speedIn) {
         ironGolem = creature;
         this.speed = speedIn;
-        this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        this.setMutexFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
     @Override
@@ -29,8 +29,8 @@ public class PickupGolemGoal extends Goal {
         if (this.ironGolem.world.isDaytime()
                 && this.ironGolem.getRNG().nextInt(6000) == 0
                 && this.ironGolem.getPassengers().isEmpty()) {
-            strawGolem = ironGolem.world.getClosestEntityWithinAABB(EntityStrawGolem.class, predicate,
-                    this.ironGolem, this.ironGolem.posX, this.ironGolem.posY, this.ironGolem.posZ,
+            strawGolem = ironGolem.world.getClosestEntityWithinAABB(EntityStrawGolem.class, predicate, this.ironGolem,
+                    this.ironGolem.posX, this.ironGolem.posY, this.ironGolem.posZ,
                     this.ironGolem.getBoundingBox().grow(7.5D, 2.0D, 7.5D));
             return strawGolem != null && strawGolem.isHandEmpty() && !strawGolem.isPassenger();
         }

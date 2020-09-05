@@ -45,4 +45,15 @@ public interface IMemory {
      * @param pos
      */
     void setPriorityChest(BlockPos pos);
+
+    /**
+     * @return the anchor location
+     */
+    BlockPos getAnchorPos();
+
+    /**
+     * Sets the anchor position
+     * @param pos
+     */
+    void setAnchorPos(BlockPos pos);
 }

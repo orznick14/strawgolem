@@ -10,8 +10,11 @@ import java.util.Set;
 public class Memory implements IMemory {
 
     private final Set<Pair<IWorld, BlockPos>> posList;
+    // location of preferred chest for delivery
     private BlockPos priority;
-
+    // location of default wander anchor - where do we go when we've wandered enough?
+    private BlockPos anchor;
+    
     public Memory() {
         posList = new HashSet<>();
         priority = BlockPos.ZERO;
@@ -58,5 +61,11 @@ public class Memory implements IMemory {
     public void setPriorityChest(BlockPos pos) {
         priority = pos;
     }
+
+    @Override
+    public BlockPos getAnchorPos() { return anchor; }
+
+    @Override
+    public void setAnchorPos(BlockPos pos) { anchor = pos; }
 
 }
