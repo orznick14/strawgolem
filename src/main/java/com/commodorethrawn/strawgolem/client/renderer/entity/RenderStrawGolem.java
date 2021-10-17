@@ -4,8 +4,9 @@ import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.client.renderer.entity.model.ModelStrawGolem;
 import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.registry.ClientRegistry;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -49,8 +50,8 @@ public class RenderStrawGolem extends MobEntityRenderer<EntityStrawGolem, ModelS
         IS_DECEMBER = GregorianCalendar.getInstance().get(Calendar.MONTH) == Calendar.DECEMBER;
     }
 
-    public RenderStrawGolem(EntityRenderDispatcher rendermanagerIn) {
-        super(rendermanagerIn, new ModelStrawGolem(), 0.35f);
+    public RenderStrawGolem(EntityRendererFactory.Context context) {
+        super(context, new ModelStrawGolem(context.getPart(ClientRegistry.Entity.getStrawGolemModel())), 0.35f);
         this.addFeature(new HeldItemFeatureRenderer<>(this));
     }
 
@@ -96,5 +97,6 @@ public class RenderStrawGolem extends MobEntityRenderer<EntityStrawGolem, ModelS
             super.renderLabelIfPresent(entity, text, matrices, vertexConsumers, light);
         }
     }
+
 
 }

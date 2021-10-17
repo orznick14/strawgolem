@@ -1,7 +1,6 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;

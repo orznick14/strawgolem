@@ -50,7 +50,7 @@ public class GolemChestHandler {
                     // Tether to the priority chest
                     if (StrawgolemConfig.Tether.isTetherEnabled()) {
                         BlockPos anchorPos = blockHitResult.getBlockPos();
-                        Strawgolem.logger.debug(golem.getEntityId() + " setting new anchor " + anchorPos);
+                        Strawgolem.logger.debug(golem.getId() + " setting new anchor " + anchorPos);
                         golem.getTether().set(golem.world, anchorPos);
                     }
                     return ActionResult.FAIL;

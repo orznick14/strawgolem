@@ -11,7 +11,7 @@ public class GreedyPacket extends Packet {
 
     public GreedyPacket(EntityStrawGolem golem, boolean isGreedy) {
         super();
-        tag.putInt("id", golem.getEntityId());
+        tag.putInt("id", golem.getId());
         tag.putBoolean("greedy", isGreedy);
     }
 

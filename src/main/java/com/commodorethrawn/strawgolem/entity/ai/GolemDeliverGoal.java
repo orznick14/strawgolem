@@ -100,8 +100,7 @@ public class GolemDeliverGoal extends MoveToTargetPosGoal {
             }
         }
         if (chestFull) {
-            ItemEntity item = new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ());
-            item.setStack(insertStack);
+            ItemEntity item = new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), insertStack);
             worldIn.spawnEntity(item);
         }
         worldIn.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 1.0F, 1.0F);

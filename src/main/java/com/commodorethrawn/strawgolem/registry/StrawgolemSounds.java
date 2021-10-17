@@ -18,7 +18,7 @@ public class StrawgolemSounds {
     public static final Identifier GOLEM_INTERESTED_ID = new Identifier(Strawgolem.MODID, "golem_interested");
     public static final Identifier GOLEM_DISGUSTED_ID = new Identifier(Strawgolem.MODID, "golem_disgusted");
 
-    public static void register() {
+    static void register() {
         registerSounds(GOLEM_AMBIENT_ID,
                 GOLEM_STRAINED_ID,
                 GOLEM_HURT_ID,

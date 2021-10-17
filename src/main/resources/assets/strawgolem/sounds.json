@@ -70,5 +70,12 @@
       "strawgolem:strawgolem-interest2",
       "strawgolem:strawgolem-interest3"
     ]
+  },
+  "golem_disgusted": {
+    "category": "neutral",
+    "subtitle": "strawgolem.subtitle.golemDisgusted",
+    "sounds": [
+      "strawgolem:strawgolem-disgusted"
+    ]
   }
 }

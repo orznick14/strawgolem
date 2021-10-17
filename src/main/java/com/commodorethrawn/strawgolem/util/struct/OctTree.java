@@ -8,7 +8,7 @@ import java.util.*;
 
 public class OctTree implements PosTree {
 
-    private static final BlockBox DEFAULT = BlockBox.create(-2147483646, -2147483646, -2147483646, 2147483646, 2147483646, 2147483646);
+    private static final BlockBox DEFAULT = new BlockBox(-2147483646, -2147483646, -2147483646, 2147483646, 2147483646, 2147483646);
     private static final HashMap<Triplet<Boolean, Boolean, Boolean>, Octant> octants = new HashMap<>();
     static {
         octants.put(new Triplet<>(true, true, true), Octant.FIRST);
@@ -43,31 +43,14 @@ public class OctTree implements PosTree {
     public OctTree(final OctTree parent, final Octant octant) {
         this.parent = parent;
         switch (octant) {
-            case FIRST:
-                boundary = new BlockBox(parent.boundary.minX, parent.boundary.minY, parent.boundary.minZ, parent.center.getX(), parent.center.getY(), parent.center.getZ());
-                break;
-            case SECOND:
-                boundary = new BlockBox(parent.boundary.minX, parent.boundary.minY, parent.center.getZ(), parent.center.getX(), parent.center.getY(), parent.boundary.maxZ);
-                break;
-            case THIRD:
-                boundary = new BlockBox(parent.center.getX(), parent.boundary.minY, parent.boundary.minZ, parent.boundary.maxX, parent.center.getY(), parent.center.getZ());
-                break;
-            case FOURTH:
-                boundary = new BlockBox(parent.center.getX(), parent.boundary.minY, parent.center.getZ(), parent.boundary.maxX, parent.center.getY(), parent.boundary.maxZ);
-                break;
-            case FIFTH:
-                boundary = new BlockBox(parent.boundary.minX, parent.center.getY(), parent.boundary.minZ, parent.center.getX(), parent.boundary.maxY, parent.center.getZ());
-                break;
-            case SIXTH:
-                boundary = new BlockBox(parent.boundary.minX, parent.center.getY(), parent.center.getZ(), parent.center.getX(), parent.boundary.maxY, parent.boundary.maxZ);
-                break;
-            case SEVENTH:
-                boundary = new BlockBox(parent.center.getX(), parent.center.getY(), parent.boundary.minZ, parent.boundary.maxX, parent.boundary.maxY, parent.center.getZ());
-                break;
-            case EIGHTH:
-            default:
-                boundary = new BlockBox(parent.center.getX(), parent.center.getY(), parent.center.getZ(), parent.boundary.maxX, parent.boundary.maxY, parent.boundary.maxZ);
-                break;
+            case FIRST -> boundary = new BlockBox(parent.boundary.getMinX(), parent.boundary.getMinY(), parent.boundary.getMinZ(), parent.center.getX(), parent.center.getY(), parent.center.getZ());
+            case SECOND -> boundary = new BlockBox(parent.boundary.getMinX(), parent.boundary.getMinY(), parent.center.getZ(), parent.center.getX(), parent.center.getY(), parent.boundary.getMaxZ());
+            case THIRD -> boundary = new BlockBox(parent.center.getX(), parent.boundary.getMinY(), parent.boundary.getMinZ(), parent.boundary.getMaxX(), parent.center.getY(), parent.center.getZ());
+            case FOURTH -> boundary = new BlockBox(parent.center.getX(), parent.boundary.getMinY(), parent.center.getZ(), parent.boundary.getMaxX(), parent.center.getY(), parent.boundary.getMaxZ());
+            case FIFTH -> boundary = new BlockBox(parent.boundary.getMinX(), parent.center.getY(), parent.boundary.getMinZ(), parent.center.getX(), parent.boundary.getMaxY(), parent.center.getZ());
+            case SIXTH -> boundary = new BlockBox(parent.boundary.getMinX(), parent.center.getY(), parent.center.getZ(), parent.center.getX(), parent.boundary.getMaxY(), parent.boundary.getMaxZ());
+            case SEVENTH -> boundary = new BlockBox(parent.center.getX(), parent.center.getY(), parent.boundary.getMinZ(), parent.boundary.getMaxX(), parent.boundary.getMaxY(), parent.center.getZ());
+            default -> boundary = new BlockBox(parent.center.getX(), parent.center.getY(), parent.center.getZ(), parent.boundary.getMaxX(), parent.boundary.getMaxY(), parent.boundary.getMaxZ());
         }
         center = boundary.getCenter();
         buildMaps();

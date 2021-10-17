@@ -7,7 +7,7 @@ public interface CapabilityHandler {
     /**
      * The capability handler instance. Use this to register & instantiate your capabilities
      */
-    public static CapabilityHandler INSTANCE = new CapabilityHandlerImpl();
+    CapabilityHandler INSTANCE = new CapabilityHandlerImpl();
 
     /**
      * Registers the given capability.
@@ -16,7 +16,7 @@ public interface CapabilityHandler {
      * @param <T> the capability parameter
      * @param <R> the factory parameter
      */
-    public <T extends Capability, R extends CapabilityFactory<T>> void register(Class<T> cap, R factory);
+    <T extends Capability, R extends CapabilityFactory<T>> void register(Class<T> cap, R factory);
 
     /**
      * Instantiates the given capability, if registered
@@ -24,6 +24,6 @@ public interface CapabilityHandler {
      * @param <T> the capability parameter
      * @return an optional for the instance of the capability. Optional is empty if the capability is not registered
      */
-    public <T extends Capability> Optional<T> get(Class<T> cap);
+    <T extends Capability> Optional<T> get(Class<T> cap);
 
 }

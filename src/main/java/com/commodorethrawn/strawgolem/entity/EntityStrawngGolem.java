@@ -20,7 +20,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -100,14 +100,15 @@ public class EntityStrawngGolem extends GolemEntity implements IHasTether {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        tag.put("tether", tether.writeTag());
-        return super.toTag(tag);
+    public void readNbt(NbtCompound nbt) {
+        if (nbt.contains("tether")) tether.readTag(nbt.get("tether"));
+        super.readNbt(nbt);
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        if (tag.contains("tether")) tether.readTag(tag.get("tether"));
-        super.fromTag(tag);
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        nbt.put("tether", tether.writeTag());
+        return super.writeNbt(nbt);
     }
+
 }

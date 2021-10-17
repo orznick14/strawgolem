@@ -12,7 +12,7 @@ import java.util.EnumSet;
  */
 public class PickupGolemGoal extends Goal {
 
-    private static final TargetPredicate predicate = new TargetPredicate().setPredicate(e -> e instanceof EntityStrawGolem).setBaseMaxDistance(10.0D).includeTeammates();
+    private static final TargetPredicate predicate = TargetPredicate.createAttackable().setPredicate(e -> e instanceof EntityStrawGolem).setBaseMaxDistance(10.0D);
     private final double speed;
     private final GolemEntity golemEntity;
     private EntityStrawGolem strawGolem;

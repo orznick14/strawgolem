@@ -14,7 +14,7 @@ import java.util.List;
 public class TrackStrawngGolemTargetGoal extends TrackTargetGoal {
     private final EntityStrawngGolem golem;
     private LivingEntity target;
-    private final TargetPredicate targetPredicate = (new TargetPredicate()).setBaseMaxDistance(64.0D);
+    private final TargetPredicate targetPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance(48.0D);
 
     public TrackStrawngGolemTargetGoal(EntityStrawngGolem golem) {
         super(golem, false, true);
@@ -24,14 +24,12 @@ public class TrackStrawngGolemTargetGoal extends TrackTargetGoal {
 
     public boolean canStart() {
         Box box = this.golem.getBoundingBox().expand(10.0D, 8.0D, 10.0D);
-        List<LivingEntity> list = this.golem.world.getTargets(EntityStrawGolem.class, this.targetPredicate, this.golem, box);
+        List<EntityStrawGolem> list = this.golem.world.getTargets(EntityStrawGolem.class, this.targetPredicate, this.golem, box);
 
-        for (LivingEntity livingEntity : list) {
-            EntityStrawGolem strawGolem = (EntityStrawGolem) livingEntity;
+        for (EntityStrawGolem strawGolem : list) {
             if (strawGolem.getRecentDamageSource() != null && strawGolem.getRecentDamageSource().getAttacker() instanceof PlayerEntity) {
                 this.target = (LivingEntity) strawGolem.getRecentDamageSource().getAttacker();
             }
-
         }
 
         if (this.target == null) {

@@ -13,7 +13,7 @@ public class HealthPacket extends Packet {
         super();
         tag.putInt("lifespan", golem.getLifespan().get());
         tag.putInt("hunger", golem.getHunger().get());
-        tag.putInt("id", golem.getEntityId());
+        tag.putInt("id", golem.getId());
     }
 
     HealthPacket(MinecraftClient client, PacketByteBuf byteBuf) {

@@ -6,13 +6,9 @@ import com.commodorethrawn.strawgolem.registry.CommonRegistry;
 import com.commodorethrawn.strawgolem.storage.StrawgolemSaveData;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
-import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.IOException;
 
 public class Strawgolem implements ModInitializer, ClientModInitializer {
     public static final String MODID = "strawgolem";

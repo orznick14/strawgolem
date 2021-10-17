@@ -9,7 +9,7 @@ import net.minecraft.sound.SoundEvents;
 
 public class MunchGolemGoal extends Goal {
 
-    private static final TargetPredicate predicate = new TargetPredicate().setPredicate(e -> e instanceof EntityStrawGolem).setBaseMaxDistance(10.0D).includeTeammates();
+    private static final TargetPredicate predicate = TargetPredicate.createNonAttackable().setPredicate(e -> e instanceof EntityStrawGolem).setBaseMaxDistance(10.0D);
     private final double speed;
     private final AnimalEntity animal;
     private EntityStrawGolem strawGolem;

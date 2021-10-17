@@ -83,7 +83,7 @@ public class GolemTetherGoal<T extends PathAwareEntity & IHasTether> extends Mov
         final BlockPos golemPos = entity.getBlockPos();
         if (anchor == Tether.TetherPos.ORIGIN) {
             // if anchor is unset, this is a new golem, set it
-            Strawgolem.logger.debug( entity.getEntityId() + " has no anchor, setting " + golemPos );
+            Strawgolem.logger.debug( entity.getId() + " has no anchor, setting " + golemPos );
             entity.getTether().set(golemWorld, golemPos);
             return 0.0;
         } else {

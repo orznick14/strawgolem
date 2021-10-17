@@ -70,39 +70,39 @@ class MemoryImpl implements Memory {
     }
 
     @Override
-    public Tag writeTag() {
-        CompoundTag tag = new CompoundTag();
+    public NbtElement writeTag() {
+        NbtCompound nbt = new NbtCompound();
         Set<Pair<RegistryKey<World>, BlockPos>> posList = getPositions();
-        ListTag tagList = new ListTag();
+        NbtList tagList = new NbtList();
         for (Pair<RegistryKey<World>, BlockPos> pos : posList) {
-            CompoundTag posNBT = new CompoundTag();
+            NbtCompound posNBT = new NbtCompound();
             Identifier.CODEC.encodeStart(NbtOps.INSTANCE, pos.getFirst().getValue()).result().ifPresent(dim -> {
                 posNBT.put("id", dim);
             });
             posNBT.put("pos", NbtHelper.fromBlockPos(pos.getSecond()));
             tagList.add(posNBT);
         }
-        tag.put("positions", tagList);
-        tag.put("priority", NbtHelper.fromBlockPos(getPriorityChest()));
-        return tag;
+        nbt.put("positions", tagList);
+        nbt.put("priority", NbtHelper.fromBlockPos(getPriorityChest()));
+        return nbt;
     }
 
     @Override
-    public void readTag(Tag nbt) {
-        CompoundTag tag = (CompoundTag) nbt;
-        ListTag tagList = tag.getList("positions", 10);
-        for (Tag inbt : tagList) {
-            CompoundTag posNBT = (CompoundTag) inbt;
-            RegistryKey<World> dim = DimensionType.method_28521(new Dynamic<>(NbtOps.INSTANCE, posNBT.get("id"))).result().orElseThrow(() -> {
+    public void readTag(NbtElement nbt) {
+        NbtCompound tag = (NbtCompound) nbt;
+        NbtList tagList = tag.getList("positions", 10);
+        for (NbtElement inbt : tagList) {
+            NbtCompound posNBT = (NbtCompound) inbt;
+            RegistryKey<World> dim = DimensionType.worldFromDimensionNbt(new Dynamic<>(NbtOps.INSTANCE, posNBT.get("id"))).result().orElseThrow(() -> {
                 return new IllegalArgumentException("Invalid map dimension: " + posNBT.get("id"));
             });
             if (dim == null) continue;
             BlockPos pos = NbtHelper.toBlockPos(posNBT.getCompound("pos"));
             addPosition(dim, pos);
         }
-        Tag posTag = tag.get("priority");
-        if (posTag instanceof CompoundTag) {
-            setPriorityChest(NbtHelper.toBlockPos((CompoundTag) posTag));
+        NbtElement posTag = tag.get("priority");
+        if (posTag instanceof NbtCompound) {
+            setPriorityChest(NbtHelper.toBlockPos((NbtCompound) posTag));
         }
     }
 }

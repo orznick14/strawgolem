@@ -1,6 +1,6 @@
 package com.commodorethrawn.strawgolem.entity.capability;
 
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtElement;
 
 public interface Capability {
 
@@ -8,12 +8,12 @@ public interface Capability {
      * Writes the capability data to a tag
      * @return the data tag
      */
-    Tag writeTag();
+    NbtElement writeTag();
 
     /**
      * Reads the capability data from a tag
      * @param tag the data tag
      */
-    void readTag(Tag tag);
+    void readTag(NbtElement tag);
 
 }

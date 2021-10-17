@@ -33,8 +33,8 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -50,7 +50,7 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-import static com.commodorethrawn.strawgolem.registry.StrawgolemParticles.FLY_PARTICLE;
+import static com.commodorethrawn.strawgolem.registry.ParticleRegistry.FLY_PARTICLE;
 
 public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTether {
     public static final SoundEvent GOLEM_AMBIENT = new SoundEvent(StrawgolemSounds.GOLEM_AMBIENT_ID);
@@ -61,7 +61,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
     public static final SoundEvent GOLEM_SCARED = new SoundEvent(StrawgolemSounds.GOLEM_SCARED_ID);
     public static final SoundEvent GOLEM_INTERESTED = new SoundEvent(StrawgolemSounds.GOLEM_INTERESTED_ID);
 
-    private static final Identifier LOOT = new Identifier(Strawgolem.MODID, "strawgolem");
+    private static final Identifier IDENTIFIER = new Identifier(Strawgolem.MODID, "strawgolem");
     private static final int maxLifespan = StrawgolemConfig.Health.getLifespan() + 12000;
     private static final int maxHunger = StrawgolemConfig.Health.getHunger() + 6000;
 
@@ -87,6 +87,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         hunger = CapabilityHandler.INSTANCE.get(Hunger.class).orElseThrow(() -> new InstantiationError("Failed to create new hunger cap"));
         inventory = new SimpleInventory(1);
         tempted = false;
+        // Set default tether value
     }
 
     @Override
@@ -197,7 +198,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
             if (hand == Hand.OFF_HAND || !player.isSneaking()) return ActionResult.FAIL;
             // Compute
             if (!world.isClient()) {
-                GolemChestHandler.addMapping(player.getUuid(), getEntityId());
+                GolemChestHandler.addMapping(player.getUuid(), getId());
             // Feedback
                 Text message = new TranslatableText("strawgolem.order", getDisplayName().getString());
                 player.sendMessage(message, true);
@@ -310,15 +311,14 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
      */
     public boolean holdingFullBlock() {
         ItemStack item = getMainHandStack();
-        if (!(item.getItem() instanceof BlockItem)) return false;
-        BlockItem blockItem = (BlockItem) item.getItem();
+        if (!(item.getItem() instanceof BlockItem blockItem)) return false;
         return blockItem != Items.AIR
                 && blockItem.getBlock().getDefaultState().isOpaque()
                 && blockItem.getBlock().asItem() == blockItem;
     }
-
-    /* Handles capabilities */
-
+//
+//    /* Handles capabilities */
+//
     public Lifespan getLifespan() {
         return lifespan;
     }
@@ -363,7 +363,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
     /* Golem Pickup */
 
     @Override
-    public void setPos(double posX, double posY, double posZ) {
+    public void setPosition(double posX, double posY, double posZ) {
         if (hasVehicle() && (getVehicle() instanceof IronGolemEntity || getVehicle() instanceof EntityStrawngGolem)) {
             GolemEntity golemEntity = (GolemEntity) getVehicle();
             double lookX = golemEntity.getRotationVector().getX();
@@ -371,9 +371,9 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
             double magnitude = Math.sqrt(lookX * lookX + lookZ * lookZ);
             lookX /= magnitude;
             lookZ /= magnitude;
-            super.setPos(posX + 1.71D * lookX, posY - 0.55D, posZ + 1.71D * lookZ);
+            super.setPosition(posX + 1.71D * lookX, posY - 0.55D, posZ + 1.71D * lookZ);
         } else {
-            super.setPos(posX, posY, posZ);
+            super.setPosition(posX, posY, posZ);
         }
     }
 
@@ -382,35 +382,35 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         super.stopRiding();
         if (getVehicle() instanceof IronGolemEntity || getVehicle() instanceof EntityStrawngGolem) {
             LivingEntity ridingEntity = (LivingEntity) getVehicle();
-            double lookX = ridingEntity.yaw;
-            double lookZ = ridingEntity.pitch;
+            double lookX = ridingEntity.getYaw();
+            double lookZ = ridingEntity.getPitch();
             double magnitude = Math.sqrt(lookX * lookX + lookZ * lookZ);
             lookX /= magnitude;
             lookZ /= magnitude;
-            super.setPos(getPos().x + lookX, getPos().y, getPos().z + lookZ);
+            super.setPosition(getPos().x + lookX, getPos().y, getPos().z + lookZ);
         }
     }
 
-    // Storage
+    /* Storage */
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
+    public NbtCompound writeNbt(NbtCompound tag) {
         tag.put("lifespan", lifespan.writeTag());
         tag.put("hunger", hunger.writeTag());
         tag.put("memory", memory.writeTag());
-        tag.put("inventory", inventory.getTags());
+        tag.put("inventory", inventory.toNbtList());
         tag.put("tether", tether.writeTag());
-        return super.toTag(tag);
+        return super.writeNbt(tag);
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
+    public void readNbt(NbtCompound tag) {
         if (tag.contains("lifespan")) lifespan.readTag(tag.get("lifespan"));
         if (tag.contains("hunger")) hunger.readTag(tag.get("hunger"));
         if (tag.contains("memory")) memory.readTag(tag.get("memory"));
-        if (tag.contains("inventory")) inventory.readTags((ListTag) tag.get("inventory"));
+        if (tag.contains("inventory")) inventory.readNbtList((NbtList) tag.get("inventory"));
         if (tag.contains("tether")) tether.readTag(tag.get("tether"));
-        super.fromTag(tag);
+        super.readNbt(tag);
     }
 
 
@@ -445,7 +445,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
 
     @Override
     protected Identifier getLootTableId() {
-        return LOOT;
+        return IDENTIFIER;
     }
 
 }

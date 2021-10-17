@@ -10,6 +10,7 @@ import com.commodorethrawn.strawgolem.network.HoldingPacket;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.*;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -184,7 +185,7 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
      */
     private void fakeRightClick(ServerWorld worldIn, BlockPos pos, BlockState state) {
         GameProfile fakeProfile = new GameProfile(UUID.randomUUID(), mob.getEntityName());
-        ServerPlayerEntity fake = new ServerPlayerEntity(worldIn.getServer(), worldIn, fakeProfile, new ServerPlayerInteractionManager(worldIn));
+        ServerPlayerEntity fake = new ServerPlayerEntity(worldIn.getServer(), worldIn, fakeProfile);
         fake.setPos(mob.getX(), mob.getY(), mob.getZ());
         BlockHitResult result = new BlockHitResult(strawgolem.getPos(),
                 strawgolem.getHorizontalFacing().getOpposite(),
@@ -195,12 +196,12 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
             List<ItemEntity> itemList = worldIn.getEntitiesByClass(ItemEntity.class, new Box(pos).expand(2.5F), e -> true);
             for (ItemEntity item : itemList) {
                 strawgolem.getInventory().addStack(item.getStack());
-                item.remove();
+                item.remove(Entity.RemovalReason.DISCARDED);
             }
         } catch (NullPointerException ex) {
             Strawgolem.logger.info(String.format("Golem could not harvest block at: %s", pos));
         }
-        fake.remove();
+        fake.kill();
     }
 
     /**

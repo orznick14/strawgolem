@@ -1,8 +1,8 @@
 package com.commodorethrawn.strawgolem.entity.capability.lifespan;
 
 import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtInt;
 
 class LifespanImpl implements Lifespan {
     private int tickLeft;
@@ -33,13 +33,13 @@ class LifespanImpl implements Lifespan {
     }
 
     @Override
-    public Tag writeTag() {
-        return IntTag.of(tickLeft);
+    public NbtElement writeTag() {
+        return NbtInt.of(tickLeft);
     }
 
     @Override
-    public void readTag(Tag tag) {
-        IntTag intTag = (IntTag) tag;
-        tickLeft = intTag.getInt();
+    public void readTag(NbtElement tag) {
+        NbtInt NbtInt = (NbtInt) tag;
+        tickLeft = NbtInt.intValue();
     }
 }

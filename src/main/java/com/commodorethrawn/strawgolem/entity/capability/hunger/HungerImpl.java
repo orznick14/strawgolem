@@ -1,8 +1,8 @@
 package com.commodorethrawn.strawgolem.entity.capability.hunger;
 
 import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtInt;
+import net.minecraft.nbt.NbtElement;
 
 class HungerImpl implements Hunger {
 
@@ -38,13 +38,13 @@ class HungerImpl implements Hunger {
     }
 
     @Override
-    public Tag writeTag() {
-        return IntTag.of(hunger);
+    public NbtElement writeTag() {
+        return NbtInt.of(hunger);
     }
 
     @Override
-    public void readTag(Tag tag) {
-        IntTag intTag = (IntTag) tag;
-        hunger = intTag.getInt();
+    public void readTag(NbtElement tag) {
+        NbtInt NbtInt = (NbtInt) tag;
+        hunger = NbtInt.intValue();
     }
 }

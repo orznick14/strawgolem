@@ -1,10 +1,10 @@
 package com.commodorethrawn.strawgolem.entity.capability.tether;
 
 import com.mojang.serialization.Dynamic;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -46,8 +46,8 @@ class TetherImpl implements Tether {
     }
 
     @Override
-    public Tag writeTag() {
-        CompoundTag tag = new CompoundTag();
+    public NbtElement writeTag() {
+        NbtCompound tag = new NbtCompound();
         tag.put("pos", NbtHelper.fromBlockPos(tetherPos.getPos()));
         Identifier.CODEC.encodeStart(NbtOps.INSTANCE, tetherPos.getWorld().getValue()).result().ifPresent(dim -> {
             tag.put("world", dim);
@@ -56,9 +56,9 @@ class TetherImpl implements Tether {
     }
 
     @Override
-    public void readTag(Tag nbt) {
-        CompoundTag tag = (CompoundTag)  nbt;
-        RegistryKey<World> dim = DimensionType.method_28521(new Dynamic<>(NbtOps.INSTANCE, tag.get("world"))).result().orElseThrow(() -> {
+    public void readTag(NbtElement nbt) {
+        NbtCompound tag = (NbtCompound)  nbt;
+        RegistryKey<World> dim = DimensionType.worldFromDimensionNbt(new Dynamic<>(NbtOps.INSTANCE, tag.get("world"))).result().orElseThrow(() -> {
             return new IllegalArgumentException("Invalid map dimension: " + tag.get("world"));
         });
         if (dim == null) return;

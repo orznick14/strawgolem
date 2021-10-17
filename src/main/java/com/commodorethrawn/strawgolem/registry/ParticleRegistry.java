@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
-public class StrawgolemParticles {
+public class ParticleRegistry {
 
     public static final DefaultParticleType FLY_PARTICLE = new DefaultParticleType(true) {};
 

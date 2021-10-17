@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "strawgolem",
-  "version": "1.9.10",
+  "version": "1.10-B1",
 
   "name": "Strawgolem",
   "description": "Straw Golem! It's a farmer!",
@@ -29,8 +29,9 @@
     "strawgolem.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.7.4",
+    "fabricloader": ">=0.11.3",
     "fabric": "*",
-    "minecraft": "1.16.x"
+    "minecraft": "1.17.x",
+    "java": ">=16"
   }
 }

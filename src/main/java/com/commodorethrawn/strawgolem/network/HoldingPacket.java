@@ -5,7 +5,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.world.World;
 
@@ -13,8 +14,8 @@ public class HoldingPacket extends Packet {
 
     public HoldingPacket(EntityStrawGolem golem) {
         super();
-        tag.put("heldStack", golem.getMainHandStack().toTag(new CompoundTag()));
-        tag.putInt("id", golem.getEntityId());
+        tag.put("heldStack", golem.getMainHandStack().writeNbt(new NbtCompound()));
+        tag.putInt("id", golem.getId());
     }
 
     HoldingPacket(MinecraftClient client, PacketByteBuf byteBuf) {
@@ -24,7 +25,7 @@ public class HoldingPacket extends Packet {
     @Override
     @Environment(EnvType.CLIENT)
     public void execute() {
-        ItemStack stack = ItemStack.fromTag(tag.getCompound("heldStack"));
+        ItemStack stack = ItemStack.fromNbt(tag.getCompound("heldStack"));
         World world = net.minecraft.client.MinecraftClient.getInstance().world;
         EntityStrawGolem golem = null;
         if (world != null) golem = (EntityStrawGolem) world.getEntityById(tag.getInt("id"));

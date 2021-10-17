@@ -1,8 +1,8 @@
 package com.commodorethrawn.strawgolem.storage;
 
 import com.commodorethrawn.strawgolem.crop.CropHandler;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
@@ -31,18 +31,18 @@ public class StrawgolemSaveData {
     public void loadData(World world) throws IOException {
         File saveFile = new File(worldDataDir, getFileName(world));
         if (saveFile.exists() && saveFile.isFile()) {
-            CompoundTag worldTag = NbtIo.readCompressed(saveFile);
-            ListTag positionsTag = worldTag.getList(POS, TAG_COMPOUND);
+            NbtCompound worldTag = NbtIo.readCompressed(saveFile);
+            NbtList positionsTag = worldTag.getList(POS, TAG_COMPOUND);
             positionsTag.forEach(tag -> {
-                BlockPos pos = NbtHelper.toBlockPos((CompoundTag) tag);
+                BlockPos pos = NbtHelper.toBlockPos((NbtCompound) tag);
                 CropHandler.INSTANCE.addCrop(world, pos);
             });
         }
     }
 
     public void saveData(World world) throws IOException {
-        CompoundTag worldTag = new CompoundTag();
-        ListTag positionsTag = new ListTag();
+        NbtCompound worldTag = new NbtCompound();
+        NbtList positionsTag = new NbtList();
         Iterator<BlockPos> cropIterator = CropHandler.INSTANCE.getCrops(world);
         while (cropIterator.hasNext()) {
             BlockPos pos = cropIterator.next();

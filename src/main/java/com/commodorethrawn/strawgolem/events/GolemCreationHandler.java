@@ -6,7 +6,6 @@ import com.commodorethrawn.strawgolem.registry.StrawgolemEntities;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -14,8 +13,6 @@ import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.StringVisitable;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -79,7 +76,7 @@ public class GolemCreationHandler {
             ServerWorld world = (ServerWorld) worldIn;
             world.setBlockState(pumpkin, Blocks.AIR.getDefaultState());
             world.setBlockState(hay, Blocks.AIR.getDefaultState());
-            EntityStrawGolem strawGolem = StrawgolemEntities.strawGolemEntityType().create(world);
+            EntityStrawGolem strawGolem = StrawgolemEntities.getStrawGolemType().create(world);
             strawGolem.refreshPositionAndAngles(hay, facing.getHorizontal(), 0.0F);
             world.spawnEntity(strawGolem);
             return ActionResult.SUCCESS;
@@ -95,10 +92,10 @@ public class GolemCreationHandler {
      */
     public static ActionResult spawnStrawngGolem(World worldIn, EntityStrawGolem golem) {
         if (!worldIn.isClient) {
-            EntityStrawngGolem strawngGolem = StrawgolemEntities.strawngGolemEntityType().create(worldIn);
+            EntityStrawngGolem strawngGolem = StrawgolemEntities.getStrawngGolemType().create(worldIn);
             if (golem.hasCustomName()) strawngGolem.setCustomName(golem.getCustomName());
             strawngGolem.refreshPositionAndAngles(golem.getBlockPos(), golem.headYaw, (float) golem.getLookControl().getLookY());
-            golem.remove();
+            golem.kill();
             if (worldIn.getBlockState(golem.getBlockPos()).getBlock() == Blocks.FIRE) {
                 worldIn.setBlockState(golem.getBlockPos(), Blocks.AIR.getDefaultState());
             }

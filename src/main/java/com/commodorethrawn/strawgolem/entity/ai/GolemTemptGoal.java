@@ -18,7 +18,7 @@ public class GolemTemptGoal extends TemptGoal {
     private final EntityStrawGolem strawGolem;
 
     public GolemTemptGoal(EntityStrawGolem creatureIn) {
-        super(creatureIn, speed, false, Ingredient.ofItems(Items.APPLE));
+        super(creatureIn, speed, Ingredient.ofItems(Items.APPLE), false);
         strawGolem = creatureIn;
     }
 
@@ -47,7 +47,7 @@ public class GolemTemptGoal extends TemptGoal {
             World golemWorld = strawGolem.world;
             double d = strawGolem.getTether().distanceTo(golemWorld, golemPos);
             if (d > StrawgolemConfig.Tether.getTetherMaxRange()) {
-                Strawgolem.logger.debug(strawGolem.getEntityId() + " setting new anchor " + golemPos);
+                Strawgolem.logger.debug(strawGolem.getId() + " setting new anchor " + golemPos);
                 strawGolem.getTether().set(golemWorld, golemPos);
             }
         }
