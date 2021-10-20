@@ -22,7 +22,7 @@ import static com.commodorethrawn.strawgolem.registry.StrawgolemEntities.STRAW_G
 public class ClientRegistry {
 
     public static void register() {
-        ClientTickEvents.END_WORLD_TICK.register(ActionScheduler.INSTANCE::tick);
+        ClientTickEvents.END_WORLD_TICK.register(ActionScheduler.INSTANCE::tickClient);
         ParticleRegistry.register();
         registerEntityRenderer();
         registerEntityModelLayer();

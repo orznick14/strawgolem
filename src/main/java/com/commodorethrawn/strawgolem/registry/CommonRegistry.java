@@ -12,6 +12,7 @@ import com.commodorethrawn.strawgolem.events.*;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
 import com.commodorethrawn.strawgolem.util.scheduler.ActionScheduler;
 import mcp.mobius.waila.api.event.WailaTooltipEvent;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -40,7 +41,7 @@ public class CommonRegistry {
         // Crop Registry
         RegistryEntryAddedCallback.event(Registry.BLOCK).register((i, id, block) -> registerCrop(block));
         // Server Scheduler
-        ServerTickEvents.END_WORLD_TICK.register(ActionScheduler.INSTANCE::tick);
+        ServerTickEvents.END_WORLD_TICK.register(ActionScheduler.INSTANCE::tickServer);
         // Entity patch handling
         ServerEntityEvents.ENTITY_LOAD.register(EntityPatchHandler::onEntityLoad);
         // Iron Golem Handling
