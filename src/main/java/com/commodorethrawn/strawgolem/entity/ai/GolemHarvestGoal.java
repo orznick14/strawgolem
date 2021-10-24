@@ -199,9 +199,9 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
                 item.remove(Entity.RemovalReason.DISCARDED);
             }
         } catch (NullPointerException ex) {
-            Strawgolem.logger.info(String.format("Golem could not harvest block at: %s", pos));
+            Strawgolem.logger.error(String.format("Golem could not harvest block at: %s", pos));
         }
-        fake.kill();
+        fake.remove(Entity.RemovalReason.DISCARDED);
     }
 
     /**
