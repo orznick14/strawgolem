@@ -1,14 +1,38 @@
 package com.commodorethrawn.strawgolem.util.struct;
 
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 
 import java.util.*;
 
+class OctBox {
+
+    final int minX, minY, minZ;
+    final int maxX, maxY, maxZ;
+    final BlockPos center;
+
+    public OctBox(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        this.minX = minX;
+        this.minY = minY;
+        this.minZ = minZ;
+        this.maxX = maxX;
+        this.maxY = maxY;
+        this.maxZ = maxZ;
+        center = calculateCenter();
+    }
+
+    private BlockPos calculateCenter() {
+        int centerX = (minX + maxX) / 2;
+        int centerY = (minY + maxY) / 2;
+        int centerZ = (minZ + maxZ) / 2;
+        return new BlockPos(centerX, centerY, centerZ);
+    }
+
+}
+
 public class OctTree implements PosTree {
 
-    private static final BlockBox DEFAULT = new BlockBox(-2147483646, -2147483646, -2147483646, 2147483646, 2147483646, 2147483646);
+    private static final OctBox DEFAULT = new OctBox(-2147483645, -2147483645, -2147483645, 2147483645, 2147483645, 2147483645);
     private static final HashMap<Triplet<Boolean, Boolean, Boolean>, Octant> octants = new HashMap<>();
     static {
         octants.put(new Triplet<>(true, true, true), Octant.FIRST);
@@ -21,16 +45,14 @@ public class OctTree implements PosTree {
         octants.put(new Triplet<>(false, false, false), Octant.EIGHTH);  
     }
 
-    
     private final OctTree parent;
-    private final BlockBox boundary;
+    private final OctBox boundary;
     private final Vec3i center;
     private final HashMap<Octant, OctTree> octTrees = new HashMap<>();
     private BlockPos point;
 
     private enum Octant {
         FIRST, SECOND, THIRD, FOURTH, FIFTH, SIXTH, SEVENTH, EIGHTH
-
     }
 
     OctTree() {
@@ -43,28 +65,17 @@ public class OctTree implements PosTree {
     public OctTree(final OctTree parent, final Octant octant) {
         this.parent = parent;
         switch (octant) {
-            case FIRST -> boundary = new BlockBox(parent.boundary.getMinX(), parent.boundary.getMinY(), parent.boundary.getMinZ(), parent.center.getX(), parent.center.getY(), parent.center.getZ());
-            case SECOND -> boundary = new BlockBox(parent.boundary.getMinX(), parent.boundary.getMinY(), parent.center.getZ(), parent.center.getX(), parent.center.getY(), parent.boundary.getMaxZ());
-            case THIRD -> boundary = new BlockBox(parent.center.getX(), parent.boundary.getMinY(), parent.boundary.getMinZ(), parent.boundary.getMaxX(), parent.center.getY(), parent.center.getZ());
-            case FOURTH -> boundary = new BlockBox(parent.center.getX(), parent.boundary.getMinY(), parent.center.getZ(), parent.boundary.getMaxX(), parent.center.getY(), parent.boundary.getMaxZ());
-            case FIFTH -> boundary = new BlockBox(parent.boundary.getMinX(), parent.center.getY(), parent.boundary.getMinZ(), parent.center.getX(), parent.boundary.getMaxY(), parent.center.getZ());
-            case SIXTH -> boundary = new BlockBox(parent.boundary.getMinX(), parent.center.getY(), parent.center.getZ(), parent.center.getX(), parent.boundary.getMaxY(), parent.boundary.getMaxZ());
-            case SEVENTH -> boundary = new BlockBox(parent.center.getX(), parent.center.getY(), parent.boundary.getMinZ(), parent.boundary.getMaxX(), parent.boundary.getMaxY(), parent.center.getZ());
-            default -> boundary = new BlockBox(parent.center.getX(), parent.center.getY(), parent.center.getZ(), parent.boundary.getMaxX(), parent.boundary.getMaxY(), parent.boundary.getMaxZ());
+            case FIRST -> boundary = new OctBox(parent.boundary.minX, parent.boundary.minY, parent.boundary.minZ, parent.center.getX(), parent.center.getY(), parent.center.getZ());
+            case SECOND -> boundary = new OctBox(parent.boundary.minX, parent.boundary.minY, parent.center.getZ(), parent.center.getX(), parent.center.getY(), parent.boundary.maxZ);
+            case THIRD -> boundary = new OctBox(parent.center.getX(), parent.boundary.minY, parent.boundary.minZ, parent.boundary.maxX, parent.center.getY(), parent.center.getZ());
+            case FOURTH -> boundary = new OctBox(parent.center.getX(), parent.boundary.minY, parent.center.getZ(), parent.boundary.maxX , parent.center.getY(), parent.boundary.maxZ);
+            case FIFTH -> boundary = new OctBox(parent.boundary.minX, parent.center.getY(), parent.boundary.minZ, parent.center.getX(), parent.boundary.maxY, parent.center.getZ());
+            case SIXTH -> boundary = new OctBox(parent.boundary.minX, parent.center.getY(), parent.center.getZ(), parent.center.getX(), parent.boundary.maxY, parent.boundary.maxZ);
+            case SEVENTH -> boundary = new OctBox(parent.center.getX(), parent.center.getY(), parent.boundary.minZ, parent.boundary.maxX, parent.boundary.maxY, parent.center.getZ());
+            default -> boundary = new OctBox(parent.center.getX(), parent.center.getY(), parent.center.getZ(), parent.boundary.maxX, parent.boundary.maxY, parent.boundary.maxZ);
         }
-        center = boundary.getCenter();
+        center = boundary.center;
         buildMaps();
-    }
-
-    private void buildMaps() {
-        octTrees.put(Octant.FIRST, null);
-        octTrees.put(Octant.SECOND, null);
-        octTrees.put(Octant.THIRD, null);
-        octTrees.put(Octant.FOURTH, null);
-        octTrees.put(Octant.FIFTH, null);
-        octTrees.put(Octant.SIXTH, null);
-        octTrees.put(Octant.SEVENTH, null);
-        octTrees.put(Octant.EIGHTH, null);
     }
 
     // ADT methods
@@ -74,9 +85,11 @@ public class OctTree implements PosTree {
         if (pos == null) return;
         OctTree result = search(pos);
         if (pos.equals(result.point)) return;
-        if (result.isLeaf()) {
-            if (result.point == null) result.point = pos;
-            else result.insertToLeaf(pos);
+
+        if (result.isEmpty()) {
+            result.point = pos;
+        } else if (result.isLeaf()) {
+            result.insertToLeaf(pos);
         } else {
             Octant posOctant = result.getOctant(pos);
             OctTree posTree = new OctTree(result, posOctant);
@@ -133,6 +146,17 @@ public class OctTree implements PosTree {
 
     // Smaller helpers
 
+    private void buildMaps() {
+        octTrees.put(Octant.FIRST, null);
+        octTrees.put(Octant.SECOND, null);
+        octTrees.put(Octant.THIRD, null);
+        octTrees.put(Octant.FOURTH, null);
+        octTrees.put(Octant.FIFTH, null);
+        octTrees.put(Octant.SIXTH, null);
+        octTrees.put(Octant.SEVENTH, null);
+        octTrees.put(Octant.EIGHTH, null);
+    }
+
     private Octant getOctant(final BlockPos query) {
         Triplet<Boolean, Boolean, Boolean> queryValues = new Triplet<>(
                 query.getX() < center.getX(),
@@ -167,20 +191,27 @@ public class OctTree implements PosTree {
     }
 
     private void insertToLeaf(BlockPos pos) {
-        Octant posOctant = getOctant(pos);
-        Octant pointOctant = getOctant(point);
+        OctTree tree = this;
 
-        OctTree posTree = new OctTree(this, posOctant);
+        Octant pointOctant = tree.getOctant(point);
+        Octant posOctant = tree.getOctant(pos);
+
+        while (pointOctant == posOctant) {
+            tree.setOctTree(pointOctant, new OctTree(tree, pointOctant));
+            tree = tree.getOctTree(pointOctant);
+
+            pointOctant = tree.getOctant(point);
+            posOctant = tree.getOctant(pos);
+        }
+
+        OctTree posTree = new OctTree(tree, posOctant);
         posTree.point = pos;
         setOctTree(posOctant, posTree);
 
-        if (posOctant == pointOctant) {
-            posTree.insertToLeaf(point);
-        } else {
-            OctTree pointTree = new OctTree(this, pointOctant);
-            pointTree.point = point;
-            setOctTree(pointOctant, pointTree);
-        }
+        OctTree pointTree = new OctTree(tree, pointOctant);
+        pointTree.point = point;
+        setOctTree(pointOctant, pointTree);
+
         point = null;
     }
 
@@ -236,6 +267,7 @@ public class OctTree implements PosTree {
                 }
             }
         }
+
     }
 
 }
