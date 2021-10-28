@@ -18,6 +18,8 @@ import java.util.Iterator;
 
 public class StrawgolemSaveData {
 
+    private static final int VERSION = 1;
+
     private static final int TAG_COMPOUND = 10;
 
     private final File worldDataDir;
@@ -28,12 +30,14 @@ public class StrawgolemSaveData {
     }
 
     private static final String POS = "pos";
+    private static final String VERSION_KEY = "version";
 
     public void loadData(MinecraftServer server) throws IOException {
         for (ServerWorld world : server.getWorlds()) {
             File saveFile = new File(worldDataDir, getFileName(world));
             if (saveFile.exists() && saveFile.isFile()) {
                 NbtCompound worldTag = NbtIo.readCompressed(saveFile);
+                if (!worldTag.contains(VERSION_KEY) || worldTag.getInt(VERSION_KEY) != VERSION) continue;
                 NbtList positionsTag = worldTag.getList(POS, TAG_COMPOUND);
                 positionsTag.forEach(tag -> {
                     BlockPos pos = NbtHelper.toBlockPos((NbtCompound) tag);
@@ -53,6 +57,7 @@ public class StrawgolemSaveData {
                 positionsTag.add(NbtHelper.fromBlockPos(pos));
             }
             worldTag.put(POS, positionsTag);
+            worldTag.putInt(VERSION_KEY, VERSION);
             File file = new File(worldDataDir, getFileName(world));
             NbtIo.writeCompressed(worldTag, file);
         }
