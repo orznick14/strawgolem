@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 
 
+
 public class StrawgolemCommon {
 
     public static final String MODID = "strawgolem";
