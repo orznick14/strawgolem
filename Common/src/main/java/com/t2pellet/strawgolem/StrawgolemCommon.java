@@ -33,7 +33,7 @@ public class StrawgolemCommon {
         } catch (IOException | IllegalAccessException e) {
             LOG.error("Failed to register config");
         }
-        Registry.BLOCK.forEach(ICommonRegistry::registerCrop);
+        Registries.BLOCK.forEach(ICommonRegistry::registerCrop);
         Services.COMMON_REGISTRY.registerEvents();
         CommonRegistry.Particles.register();
         CommonRegistry.Items.register();
